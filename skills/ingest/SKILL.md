@@ -1,16 +1,20 @@
 ---
 name: KOL Voice Ingest
-description: Collect ~500 posts from a KOL's X profile using Playwright browser automation, normalize and store as corpus artifacts.
+description: Collect ~500 posts from a KOL's X profile via Chrome DevTools Protocol (CDP), normalize and store as corpus artifacts.
 ---
 
-# Skill A — Ingest
+# Skill A — Ingest (via CDP)
 
-Collect posts from a target KOL's X (Twitter) profile page using the `scripts/ingest.py` Python script. Output a normalized corpus as JSONL + metadata JSON.
+Collect posts from a target KOL's X (Twitter) profile page by connecting to your existing Chrome browser via Chrome DevTools Protocol (CDP). Output a normalized corpus as JSONL + metadata JSON.
 
 ## Prerequisites
 
-- Python venv with Playwright installed (`.venv/`)
-- Chromium browser installed via Playwright (`python -m playwright install chromium`)
+- Python venv with `websocket-client` installed (`.venv/`)
+- Chrome launched with remote debugging enabled:
+  ```bash
+  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+  ```
+- Chrome logged into X (twitter.com) so the timeline is accessible
 - The user has provided a valid X `handle` (without the @ prefix)
 
 ---
@@ -31,17 +35,18 @@ python skills/ingest/scripts/ingest.py --handle <handle> --limit 500
 | `--handle` | (required) | KOL's X handle (without @) |
 | `--limit` | 200 | Maximum number of posts to collect |
 | `--delay` | 2.0 | Delay between scrolls in seconds |
-| `--headless` | false | Run browser in headless mode (no visible window) |
+| `--port` | 9222 | Chrome remote debugging port |
 | `--out` | `artifacts/kol/<handle>` | Output directory for corpus files |
 
 ---
 
 ## What the Script Does
 
-### Step 1: Navigate to profile
-- Opens `https://x.com/<handle>` in a Chromium browser
+### Step 1: Connect & navigate
+- Connects to your existing Chrome via WebSocket on port 9222
+- Navigates to `https://x.com/<handle>` in the current tab
 - Waits for tweet elements to appear in the DOM
-- Reports error if profile not found or login wall detected
+- Reports error if Chrome not reachable, profile not found, or login needed
 
 ### Step 2: Scroll and collect posts
 - Extracts tweets using `data-testid` DOM selectors:
@@ -134,8 +139,9 @@ If `corpus.v1.jsonl` and `corpus_meta.json` already exist for this handle:
 
 | Situation | Action |
 |---|---|
-| Playwright/Chromium not installed | Run: `source .venv/bin/activate && pip install playwright && python -m playwright install chromium` |
+| Chrome not running on port 9222 | Launch Chrome with `--remote-debugging-port=9222` |
+| `websocket-client` not installed | Run: `source .venv/bin/activate && pip install websocket-client` |
 | Profile page not found (404) | Tell user the handle was not found and ask to verify |
-| Login wall / restricted | Script runs its own browser — no login needed for public profiles |
+| Login wall / restricted | Log into X in Chrome before running the script |
 | Rate limited (slow loading) | Increase `--delay` to 3-5 seconds |
 | Collected < 50 posts | Warn user that style analysis may be less accurate |
