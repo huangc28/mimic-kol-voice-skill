@@ -760,15 +760,15 @@ Write both:
 ## 15) Implementation Progress
 
 ### Orchestrator
-- [ ] `skills/orchestrator/SKILL.md` — orchestrator flow + input validation logic
+- [x] `skills/orchestrator/SKILL.md` — orchestrator flow + input validation logic
 
 ### Skill A — Ingest
-- [ ] `skills/ingest/SKILL.md` — chrome-dev-mcp scraping instructions
-- [ ] Corpus JSONL output format (`corpus.v1.jsonl`)
-- [ ] Corpus metadata output (`corpus_meta.json`)
-- [ ] Normalize rules (text_raw → text_norm)
+- [x] `skills/ingest/SKILL.md` — chrome-dev-mcp scraping instructions
+- [x] Corpus JSONL output format (`corpus.v1.jsonl`)
+- [x] Corpus metadata output (`corpus_meta.json`)
+- [x] Normalize rules (text_raw → text_norm)
 - [ ] Upload/import mode (Mode B)
-- [ ] Incremental update / caching logic
+- [x] Incremental update / caching logic
 
 ### Skill B — Voice Profile Builder
 - [ ] `skills/profile/SKILL.md` — analysis prompt + deterministic metrics
